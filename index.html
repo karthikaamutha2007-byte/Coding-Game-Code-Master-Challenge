@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeMaster – Learn Coding Through Games</title>
+  <style>
+    /* =========================================================
+       CSS VARIABLES & THEME DEFINITIONS (DARK / LIGHT MODE)
+       ========================================================= */
+    :root {
+      --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, 'Courier New', monospace;
+
+      /* Accent & Brand Gradients */
+      --accent-blue: #3b82f6;
+      --accent-indigo: #6366f1;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+
+      --grad-primary: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+      --grad-primary-hover: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+      --grad-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --grad-gold: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-pill: 9999px;
+      --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-med: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #090d24 0%, #171347 48%, #281354 100%);
+      --surface-card: rgba(18, 24, 56, 0.82);
+      --surface-card-solid: #141a3e;
+      --surface-elevated: rgba(30, 39, 86, 0.78);
+      --surface-hover: rgba(59, 130, 246, 0.16);
+      --surface-code: #0b0f26;
+      --border-subtle: rgba(148, 163, 184, 0.18);
+      --border-strong: rgba(129, 140, 248, 0.42);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --shadow-card: 0 20px 50px rgba(4, 6, 22, 0.55);
+      --shadow-glow: 0 0 30px rgba(99, 102, 241, 0.32);
+      --tok-kw: #c084fc;
+      --tok-str: #34d399;
+      --tok-num: #fbbf24;
+      --tok-cmt: #64748b;
+      --tok-blank: #38bdf8;
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #ede9fe 100%);
+      --surface-card: rgba(255, 255, 255, 0.9);
+      --surface-card-solid: #ffffff;
+      --surface-elevated: rgba(241, 245, 255, 0.95);
+      --surface-hover: rgba(99, 102, 241, 0.1);
+      --surface-code: #111827;
+      --border-subtle: rgba(99, 102, 241, 0.18);
+      --border-strong: rgba(79, 70, 229, 0.45);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --shadow-card: 0 18px 45px rgba(49, 46, 129, 0.14);
+      --shadow-glow: 0 10px 28px rgba(79, 70, 229, 0.22);
+      --tok-kw: #c084fc;
+      --tok-str: #34d399;
+      --tok-num: #fbbf24;
+      --tok-cmt: #94a3b8;
+      --tok-blank: #38bdf8;
+    }
+
+    /* =========================================================
+       BASE & BACKGROUND ANIMATIONS
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.55;
+      overflow-x: hidden;
+      transition: background var(--transition-med), color var(--transition-med);
+    }
+
+    /* Decorative floating orbs */
+    .bg-orbs {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(85px);
+      opacity: 0.35;
+      animation: floatOrb 14s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 360px;
+      height: 360px;
+      background: #3b82f6;
+      top: -90px;
+      left: -80px;
+    }
+
+    .orb-2 {
+      width: 420px;
+      height: 420px;
+      background: #8b5cf6;
+      bottom: -120px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    .orb-3 {
+      width: 240px;
+      height: 240px;
+      background: #06b6d4;
+      top: 42%;
+      left: 60%;
+      opacity: 0.2;
+      animation-delay: -9s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(35px, -30px) scale(1.1); }
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* =========================================================
+       LAYOUT & HEADER
+       ========================================================= */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 18px 20px 48px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      background: var(--surface-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      text-align: left;
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      transition: transform var(--transition-fast);
+    }
+
+    .brand:hover {
+      transform: translateY(-1px);
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--grad-primary);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #fff;
+      box-shadow: var(--shadow-glow);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+
+    .brand-text span {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      display: block;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.92rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+      user-select: none;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      background: var(--surface-hover);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--grad-primary);
+      color: #ffffff;
+      border: none;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--grad-primary-hover);
+      box-shadow: 0 12px 32px rgba(99, 102, 241, 0.45);
+    }
+
+    .btn-lg {
+      padding: 15px 30px;
+      font-size: 1.08rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #f87171;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #ef4444;
+    }
+
+    [data-theme="light"] .btn-danger {
+      color: #dc2626;
+    }
+
+    .btn-icon {
+      padding: 9px 12px;
+      font-size: 1rem;
+    }
+
+    .pulse-cta {
+      animation: pulseGlow 2.4s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5), var(--shadow-glow); }
+      50% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0), var(--shadow-glow); }
+    }
+
+    /* =========================================================
+       SCREENS & CARDS
+       ========================================================= */
+    .screen {
+      display: none;
+      animation: fadeSlideIn 0.32s ease-out;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--surface-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 26px;
+    }
+
+    /* =========================================================
+       HOME SCREEN
+       ========================================================= */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      margin-bottom: 24px;
+      align-items: stretch;
+    }
+
+    .hero-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(99, 102, 241, 0.16);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      color: #818cf8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      width: fit-content;
+      margin-bottom: 16px;
+    }
+
+    [data-theme="light"] .hero-badge {
+      color: #4f46e5;
+      background: rgba(79, 70, 229, 0.1);
+    }
+
+    .hero-title {
+      font-size: clamp(1.9rem, 3.8vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    [data-theme="light"] .gradient-text {
+      background: linear-gradient(90deg, #2563eb, #6366f1, #9333ea);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+      margin-bottom: 22px;
+      max-width: 56ch;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .stat-chip {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      text-align: center;
+    }
+
+    .stat-chip strong {
+      display: block;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+    }
+
+    .stat-chip span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Setup Panel */
+    .setup-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .setup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .setup-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .match-pill {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    [data-theme="light"] .match-pill {
+      color: #059669;
+    }
+
+    .match-pill.empty {
+      background: rgba(239, 68, 68, 0.16);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .text-input:focus {
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22);
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice-pill {
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-elevated);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .choice-pill:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .choice-pill.selected {
+      background: var(--grad-primary);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.32);
+    }
+
+    /* Home Bottom Grid: Languages + Top Leaderboard Preview */
+    .home-lower-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .lang-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .lang-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      text-align: left;
+      color: inherit;
+      font-family: inherit;
+      transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .lang-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .lang-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .lang-py { background: linear-gradient(135deg, #3b82f6, #eab308); }
+    .lang-java { background: linear-gradient(135deg, #ef4444, #f97316); }
+    .lang-c { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+    .lang-cpp { background: linear-gradient(135deg, #6366f1, #3b82f6); }
+    .lang-js { background: linear-gradient(135deg, #eab308, #f59e0b); color: #111827; }
+
+    .lang-card h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .lang-card p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .mini-lb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mini-lb-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.86rem;
+    }
+
+    .mini-lb-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .mini-lb-name {
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-lb-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .mini-lb-score {
+      font-weight: 800;
+      color: var(--accent-blue);
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       GAME SCREEN
+       ========================================================= */
+    .game-hud {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 16px 20px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-elevated);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--grad-primary);
+      border-radius: var(--radius-pill);
+      transition: width 0.35s ease;
+    }
+
+    .hud-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: var(--radius-md);
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      font-weight: 700;
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .hud-score {
+      color: #60a5fa;
+    }
+
+    [data-theme="light"] .hud-score {
+      color: #2563eb;
+    }
+
+    .hud-streak {
+      color: #fbbf24;
+    }
+
+    [data-theme="light"] .hud-streak {
+      color: #d97706;
+    }
+
+    .hud-timer {
+      min-width: 94px;
+      justify-content: center;
+      transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .hud-timer.warning {
+      color: #fbbf24;
+      border-color: rgba(245, 158, 11, 0.55);
+      background: rgba(245, 158, 11, 0.14);
+    }
+
+    .hud-timer.danger {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.65);
+      background: rgba(239, 68, 68, 0.18);
+      animation: timerPulse 0.7s infinite alternate;
+    }
+
+    @keyframes timerPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.04); }
+    }
+
+    /* Timer Strip */
+    .timer-strip-track {
+      height: 5px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-elevated);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .timer-strip-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #10b981, #3b82f6);
+      transition: width 0.25s linear, background 0.3s ease;
+    }
+
+    .question-card {
+      padding: 28px;
+    }
+
+    .q-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .q-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .tag-lang {
+      background: rgba(59, 130, 246, 0.18);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    [data-theme="light"] .tag-lang { color: #2563eb; }
+
+    .tag-mode {
+      background: rgba(139, 92, 246, 0.18);
+      color: #c4b5fd;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    [data-theme="light"] .tag-mode { color: #7c3aed; }
+
+    .tag-easy {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    [data-theme="light"] .tag-easy { color: #059669; }
+
+    .tag-medium {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    [data-theme="light"] .tag-medium { color: #d97706; }
+
+    .tag-hard {
+      background: rgba(239, 68, 68, 0.18);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    [data-theme="light"] .tag-hard { color: #dc2626; }
+
+    .q-points-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .q-prompt {
+      font-size: clamp(1.12rem, 2.2vw, 1.38rem);
+      font-weight: 700;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    /* Code Block */
+    .code-window {
+      background: var(--surface-code);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .code-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      font-size: 0.76rem;
+      color: #94a3b8;
+      font-family: var(--font-mono);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .window-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-r { background: #ef4444; }
+    .dot-y { background: #f59e0b; }
+    .dot-g { background: #10b981; }
+
+    pre.code-body {
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+      tab-size: 4;
+    }
+
+    .tok-kw { color: var(--tok-kw); font-weight: 600; }
+    .tok-str { color: var(--tok-str); }
+    .tok-num { color: var(--tok-num); }
+    .tok-cmt { color: var(--tok-cmt); font-style: italic; }
+    .tok-blank {
+      color: var(--tok-blank);
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px dashed rgba(56, 189, 248, 0.65);
+      padding: 1px 6px;
+      border-radius: 5px;
+      font-weight: 700;
+    }
+
+    /* Answer Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-subtle);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--accent-indigo);
+      background: var(--surface-hover);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.18);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-key {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.16);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+      display: grid;
+      place-items: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      color: var(--accent-indigo);
+    }
+
+    [data-theme="dark"] .option-key {
+      color: #a5b4fc;
+    }
+
+    .option-text {
+      word-break: break-word;
+      font-family: inherit;
+    }
+
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      animation: popCorrect 0.32s ease;
+    }
+
+    .option-btn.correct .option-key {
+      background: #10b981;
+      border-color: #10b981;
+      color: #fff;
+    }
+
+    .option-btn.wrong {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      animation: shakeWrong 0.35s ease;
+    }
+
+    .option-btn.wrong .option-key {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: #fff;
+    }
+
+    @keyframes popCorrect {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.025); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes shakeWrong {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    .hint-box {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .hint-box.visible {
+      display: block;
+      animation: fadeSlideIn 0.2s ease;
+    }
+
+    .feedback-box {
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+      display: none;
+      border: 1px solid transparent;
+    }
+
+    .feedback-box.visible {
+      display: block;
+      animation: fadeSlideIn 0.25s ease;
+    }
+
+    .feedback-box.is-correct {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+
+    .feedback-box.is-wrong {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.45);
+    }
+
+    .feedback-title {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feedback-explain {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+    }
+
+    .q-footer-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .q-footer-left {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================
+       RESULTS SCREEN
+       ========================================================= */
+    .results-hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      background: var(--grad-gold);
+      color: #111827;
+      font-weight: 800;
+      font-size: 0.92rem;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    }
+
+    .results-score-big {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+
+    .results-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.02rem;
+      margin-bottom: 22px;
+    }
+
+    .results-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .res-stat {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .res-stat strong {
+      display: block;
+      font-size: 1.55rem;
+      font-weight: 800;
+    }
+
+    .res-stat span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .results-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .review-item {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--accent-green);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+    }
+
+    .review-item.wrong {
+      border-left-color: var(--accent-red);
+    }
+
+    .review-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .review-item-q {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .review-item-ans {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    /* =========================================================
+       MODALS (LEADERBOARD & HOW TO PLAY)
+       ========================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 24, 0.72);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 500;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeSlideIn 0.2s ease;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 780px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--surface-card-solid);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .lb-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .lb-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .select-input {
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .lb-table-wrap {
+      overflow-x: auto;
+    }
+
+    table.lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    table.lb-table th,
+    table.lb-table td {
+      text-align: left;
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    table.lb-table th {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    table.lb-table tr.highlight-row {
+      background: rgba(99, 102, 241, 0.16);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .guide-box {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .guide-box h3 {
+      font-size: 0.96rem;
+      margin-bottom: 6px;
+    }
+
+    .guide-box p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 26px;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* =========================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================= */
+    @media (max-width: 900px) {
+      .hero-grid,
+      .home-lower-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .game-hud {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .progress-wrap {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 12px 12px 36px;
+      }
+
+      .navbar {
+        padding: 10px 12px;
+      }
+
+      .card,
+      .question-card {
+        padding: 18px;
+      }
+
+      .hero-stats,
+      .results-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .options-grid,
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .game-hud {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .hud-pill {
+        justify-content: center;
+        font-size: 0.84rem;
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-shell">
+    <!-- ==================== NAVIGATION BAR ==================== -->
+    <header class="navbar">
+      <button class="brand" id="nav-home-btn" type="button" title="Return to Home">
+        <div class="brand-icon">&lt;/&gt;</div>
+        <div class="brand-text">
+          <h1>CodeMaster</h1>
+          <span>Learn Coding Through Games</span>
+        </div>
+      </button>
+
+      <nav class="nav-actions" aria-label="Primary actions">
+        <button class="btn" id="open-guide-btn" type="button">📘 How to Play</button>
+        <button class="btn" id="open-lb-btn" type="button">🏆 Leaderboard</button>
+        <button class="btn btn-icon" id="sound-toggle-btn" type="button" title="Toggle Sound Effects" aria-label="Toggle Sound Effects">🔊</button>
+        <button class="btn btn-icon" id="theme-toggle-btn" type="button" title="Switch Light/Dark Mode" aria-label="Switch Light/Dark Mode">☀️</button>
+      </nav>
+    </header>
+
+    <!-- ==================== HOME SCREEN ==================== -->
+    <main id="home-screen" class="screen active">
+      <div class="hero-grid">
+        <!-- Hero Intro -->
+        <section class="card hero-card">
+          <div>
+            <div class="hero-badge">⚡ Interactive Coding Arena • 45+ Challenges</div>
+            <h2 class="hero-title">
+              Level Up Your <span class="gradient-text">Coding Skills</span> Through Play
+            </h2>
+            <p class="hero-desc">
+              Master Python, Java, C, C++, and JavaScript with fast-paced quizzes, bug hunts,
+              missing-code puzzles, and output predictions. Beat the countdown timer, build streaks,
+              and climb the local leaderboard!
+            </p>
+
+            <div class="hero-stats">
+              <div class="stat-chip">
+                <strong id="stat-total-q">45</strong>
+                <span>Challenges</span>
+              </div>
+              <div class="stat-chip">
+                <strong>5</strong>
+                <span>Languages</span>
+              </div>
+              <div class="stat-chip">
+                <strong>3</strong>
+                <span>Levels</span>
+              </div>
+              <div class="stat-chip">
+                <strong id="stat-best-score">0</strong>
+                <span>Top Score</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg pulse-cta" id="start-game-btn" type="button">
+              🚀 Start Game
+            </button>
+            <button class="btn btn-lg" id="quick-play-btn" type="button">
+              🎲 Quick Random (10Q)
+            </button>
+          </div>
+        </section>
+
+        <!-- Game Setup Panel -->
+        <section class="card setup-card" aria-label="Game Configuration">
+          <div class="setup-header">
+            <h2>🎮 Mission Setup</h2>
+            <span class="match-pill" id="matching-count-pill">45 Ready</span>
+          </div>
+
+          <div class="field-group">
+            <label for="player-name-input">Player Name</label>
+            <input
+              id="player-name-input"
+              class="text-input"
+              type="text"
+              maxlength="20"
+              placeholder="Enter your coder handle..."
+              value="CoderOne"
+            />
+          </div>
+
+          <div class="field-group">
+            <label>Language</label>
+            <div class="pill-group" id="lang-pills">
+              <button type="button" class="choice-pill selected" data-value="all">🌐 All</button>
+              <button type="button" class="choice-pill" data-value="Python">🐍 Python</button>
+              <button type="button" class="choice-pill" data-value="Java">☕ Java</button>
+              <button type="button" class="choice-pill" data-value="C">⚙️ C</button>
+              <button type="button" class="choice-pill" data-value="C++">🧩 C++</button>
+              <button type="button" class="choice-pill" data-value="JavaScript">⚡ JS</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Difficulty Level</label>
+            <div class="pill-group" id="diff-pills">
+              <button type="button" class="choice-pill selected" data-value="all">✨ Mixed</button>
+              <button type="button" class="choice-pill" data-value="Easy">🟢 Easy</button>
+              <button type="button" class="choice-pill" data-value="Medium">🟡 Medium</button>
+              <button type="button" class="choice-pill" data-value="Hard">🔴 Hard</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Challenge Type</label>
+            <div class="pill-group" id="mode-pills">
+              <button type="button" class="choice-pill selected" data-value="all">🎯 All Modes</button>
+              <button type="button" class="choice-pill" data-value="quiz">📝 Quiz</button>
+              <button type="button" class="choice-pill" data-value="find-error">🐛 Find Error</button>
+              <button type="button" class="choice-pill" data-value="missing-code">🧩 Missing Code</button>
+              <button type="button" class="choice-pill" data-value="predict-output">🖥️ Output</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Questions Per Round</label>
+            <div class="pill-group" id="count-pills">
+              <button type="button" class="choice-pill" data-value="5">5</button>
+              <button type="button" class="choice-pill selected" data-value="10">10</button>
+              <button type="button" class="choice-pill" data-value="15">15</button>
+              <button type="button" class="choice-pill" data-value="999">All</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Lower Grid: Language Cards + Leaderboard Preview -->
+      <div class="home-lower-grid">
+        <section class="card">
+          <div class="section-title">
+            <span>💻 Pick a Language Track</span>
+            <button class="btn" id="reset-filters-btn" type="button">↺ Reset Filters</button>
+          </div>
+          <div class="lang-cards">
+            <button type="button" class="lang-card" data-quick-lang="Python">
+              <div class="lang-badge lang-py">PY</div>
+              <h3>Python</h3>
+              <p>9 challenges • Lists, slicing, functions</p>
+            </button>
+            <button type="button" class="lang-card" data-quick-lang="Java">
+              <div class="lang-badge lang-java">JV</div>
+              <h3>Java</h3>
+              <p>9 challenges • OOP, arrays, exceptions</p>
+            </button>
+            <button type="button" class="lang-card" data-quick-lang="C">
+              <div class="lang-badge lang-c">C</div>
+              <h3>C</h3>
+              <p>9 challenges • Pointers, scanf, memory</p>
+            </button>
+            <button type="button" class="lang-card" data-quick-lang="C++">
+              <div class="lang-badge lang-cpp">C++</div>
+              <h3>C++</h3>
+              <p>9 challenges • Vectors, refs, templates</p>
+            </button>
+            <button type="button" class="lang-card" data-quick-lang="JavaScript">
+              <div class="lang-badge lang-js">JS</div>
+              <h3>JavaScript</h3>
+              <p>9 challenges • Async, closures, ES6</p>
+            </button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-title">
+            <span>🏆 Top Coders</span>
+            <button class="btn" id="home-view-lb-btn" type="button">View All</button>
+          </div>
+          <div id="mini-leaderboard" class="mini-lb-list"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ==================== GAMEPLAY SCREEN ==================== -->
+    <section id="game-screen" class="screen" aria-live="polite">
+      <div class="card game-hud">
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span id="hud-progress-text">Question 1 of 10</span>
+            <span id="hud-accuracy-text">Accuracy: 100%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="hud-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="hud-pill hud-score" id="hud-score">⭐ 0 pts</div>
+        <div class="hud-pill hud-streak" id="hud-streak">🔥 0x</div>
+        <div class="hud-pill hud-timer" id="hud-timer">⏱️ 30s</div>
+      </div>
+
+      <div class="timer-strip-track">
+        <div class="timer-strip-fill" id="timer-strip-fill"></div>
+      </div>
+
+      <article class="card question-card">
+        <div class="q-meta-row">
+          <div class="q-badges">
+            <span class="tag tag-lang" id="q-lang-tag">Python</span>
+            <span class="tag tag-mode" id="q-mode-tag">Quiz</span>
+            <span class="tag tag-easy" id="q-diff-tag">Easy</span>
+          </div>
+          <span class="q-points-label" id="q-points-label">+100 pts</span>
+        </div>
+
+        <h2 class="q-prompt" id="q-prompt">Question prompt goes here</h2>
+
+        <div class="code-window" id="code-window">
+          <div class="code-topbar">
+            <div class="window-dots" aria-hidden="true">
+              <span class="dot-r"></span>
+              <span class="dot-y"></span>
+              <span class="dot-g"></span>
+            </div>
+            <span id="code-filename">challenge.py</span>
+          </div>
+          <pre class="code-body" id="q-code"></pre>
+        </div>
+
+        <div class="options-grid" id="options-grid"></div>
+
+        <div class="hint-box" id="hint-box"></div>
+        <div class="feedback-box" id="feedback-box">
+          <div class="feedback-title" id="feedback-title"></div>
+          <p class="feedback-explain" id="feedback-explain"></p>
+        </div>
+
+        <div class="q-footer-actions">
+          <div class="q-footer-left">
+            <button type="button" class="btn" id="hint-btn">💡 Hint</button>
+            <button type="button" class="btn" id="skip-btn">⏭️ Skip</button>
+            <button type="button" class="btn btn-danger" id="quit-game-btn">✖ End Round</button>
+          </div>
+          <button type="button" class="btn btn-primary" id="next-btn" disabled>Next Question →</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== RESULTS SCREEN ==================== -->
+    <section id="results-screen" class="screen">
+      <div class="card results-hero">
+        <div class="rank-badge" id="res-rank-badge">🏆 Code Grandmaster</div>
+        <div class="results-score-big gradient-text" id="res-score-big">0 pts</div>
+        <p class="results-subtitle" id="res-subtitle">Great effort! Your score has been saved to the leaderboard.</p>
+
+        <div class="results-stats-grid">
+          <div class="res-stat">
+            <strong id="res-correct" style="color: #10b981;">0</strong>
+            <span>Correct Answers</span>
+          </div>
+          <div class="res-stat">
+            <strong id="res-wrong" style="color: #ef4444;">0</strong>
+            <span>Wrong / Timed Out</span>
+          </div>
+          <div class="res-stat">
+            <strong id="res-accuracy" style="color: #3b82f6;">0%</strong>
+            <span>Accuracy</span>
+          </div>
+          <div class="res-stat">
+            <strong id="res-streak" style="color: #f59e0b;">0x</strong>
+            <span>Best Streak</span>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button type="button" class="btn btn-primary btn-lg" id="play-again-btn">🔄 Play Again</button>
+          <button type="button" class="btn btn-lg" id="res-home-btn">🏠 Change Settings</button>
+          <button type="button" class="btn btn-lg" id="res-lb-btn">🏆 Leaderboard</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <span>📋 Answer Review</span>
+          <button type="button" class="btn" id="toggle-review-btn">Hide Review</button>
+        </div>
+        <div class="review-list" id="review-list"></div>
+      </div>
+    </section>
+
+    <footer>
+      CodeMaster Challenge • Built with Pure HTML, CSS &amp; JavaScript • Scores saved locally via localStorage
+    </footer>
+  </div>
+
+  <!-- ==================== LEADERBOARD MODAL ==================== -->
+  <div class="modal-backdrop" id="lb-modal" role="dialog" aria-modal="true" aria-labelledby="lb-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="lb-modal-title">🏆 CodeMaster Leaderboard</h2>
+        <button type="button" class="btn" id="close-lb-btn">✕ Close</button>
+      </div>
+
+      <div class="lb-controls">
+        <div class="lb-filters">
+          <select id="lb-filter-lang" class="select-input" aria-label="Filter leaderboard by language">
+            <option value="all">All Languages</option>
+            <option value="Python">Python</option>
+            <option value="Java">Java</option>
+            <option value="C">C</option>
+            <option value="C++">C++</option>
+            <option value="JavaScript">JavaScript</option>
+          </select>
+          <select id="lb-filter-diff" class="select-input" aria-label="Filter leaderboard by difficulty">
+            <option value="all">All Levels</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-danger" id="clear-lb-btn">🗑️ Clear Scores</button>
+      </div>
+
+      <div class="lb-table-wrap">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Track</th>
+              <th>Level</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="lb-tbody"></tbody>
+        </table>
+      </div>
+      <div id="lb-empty" class="empty-state" style="display: none;">
+        No scores recorded yet for this filter. Play a round to claim #1!
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HOW TO PLAY MODAL ==================== -->
+  <div class="modal-backdrop" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="guide-modal-title">📘 How to Play CodeMaster</h2>
+        <button type="button" class="btn" id="close-guide-btn">✕ Close</button>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-box">
+          <h3>🎯 4 Challenge Types</h3>
+          <p><strong>Quiz:</strong> Test coding concepts. <strong>Find Error:</strong> Spot the bug. <strong>Missing Code:</strong> Fill the blank <code>____</code>. <strong>Output:</strong> Predict what the code prints.</p>
+        </div>
+        <div class="guide-box">
+          <h3>⏱️ Countdown &amp; Points</h3>
+          <p><strong>Easy:</strong> 100 pts (30s) • <strong>Medium:</strong> 150 pts (25s) • <strong>Hard:</strong> 200 pts (20s). Build consecutive streaks for +25 bonus points per streak level!</p>
+        </div>
+        <div class="guide-box">
+          <h3>⌨️ Keyboard Shortcuts</h3>
+          <p>Press keys <strong>1–4</strong> (or A–D) to select an option quickly, <strong>H</strong> for a hint, and <strong>Enter</strong> to advance to the next challenge.</p>
+        </div>
+        <div class="guide-box">
+          <h3>🏆 Local Leaderboard</h3>
+          <p>Your best scores are automatically saved in your browser's <code>localStorage</code>. Switch between Dark and Light modes anytime from the header.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      /* =========================================================
+         1. QUESTION BANK (45 VERIFIED CODING CHALLENGES)
+         Languages: Python, Java, C, C++, JavaScript
+         Modes: quiz, find-error, missing-code, predict-output
+         Levels: Easy, Medium, Hard
+         ========================================================= */
+      const QUESTIONS = [
+        // ---------------- PYTHON (9) ----------------
+        {
+          id: 'py-1',
+          language: 'Python',
+          difficulty: 'Easy',
+          mode: 'predict-output',
+          prompt: 'What is the output of multiplying a string by an integer in Python?',
+          code: 'x = "Code"\ny = 3\nprint(x * y)',
+          options: ['CodeCodeCode', 'Code3', 'TypeError', '9'],
+          answer: 0,
+          hint: 'In Python, * repeats a string the given number of times.',
+          explanation: 'Using the * operator between a string and an integer repeats the string 3 times, producing "CodeCodeCode".'
+        },
+        {
+          id: 'py-2',
+          language: 'Python',
+          difficulty: 'Easy',
+          mode: 'find-error',
+          prompt: 'Which line contains a syntax error?',
+          code: '1: age = 18\n2: if age >= 18\n3:     print("Adult")\n4: else:\n5:     print("Minor")',
+          options: [
+            'Line 1: Invalid variable assignment',
+            'Line 2: Missing colon (:) after the if condition',
+            'Line 3: Incorrect indentation',
+            'Line 4: else cannot be used here'
+          ],
+          answer: 1,
+          hint: 'Look closely at the end of the if statement on Line 2.',
+          explanation: 'Python requires a colon (:) at the end of if, elif, else, for, and def headers.'
+        },
+        {
+          id: 'py-3',
+          language: 'Python',
+          difficulty: 'Easy',
+          mode: 'missing-code',
+          prompt: 'Fill in the blank to print the number of items in the list (3).',
+          code: 'fruits = ["apple", "banana", "cherry"]\nprint(____(fruits))',
+          options: ['size', 'count', 'len', 'length'],
+          answer: 2,
+          hint: 'It is a 3-letter built-in Python function.',
+          explanation: 'len(fruits) returns the length (number of elements) of a list, string, tuple, or dictionary.'
+        },
+        {
+          id: 'py-4',
+          language: 'Python',
+          difficulty: 'Medium',
+          mode: 'quiz',
+          prompt: 'What does list slicing nums[1:4] return in Python?',
+          code: 'nums = [10, 20, 30, 40, 50]\nprint(nums[1:4])',
+          options: ['[10, 20, 30, 40]', '[20, 30, 40]', '[20, 30, 40, 50]', '[10, 20, 30]'],
+          answer: 1,
+          hint: 'Python slices include the start index (1) and stop BEFORE the end index (4).',
+          explanation: 'Indexing starts at 0. Index 1 is 20, index 2 is 30, index 3 is 40, and index 4 is excluded.'
+        },
+        {
+          id: 'py-5',
+          language: 'Python',
+          difficulty: 'Medium',
+          mode: 'find-error',
+          prompt: 'Why does this code raise a TypeError at runtime?',
+          code: '1: def greet(name="Guest"):\n2:     return "Hello, " + name\n3:\n4: point = (10, 20)\n5: point[0] = 99',
+          options: [
+            'Line 1: Default parameter values are invalid',
+            'Line 2: Cannot concatenate strings with +',
+            'Line 4: Parentheses cannot create a collection',
+            'Line 5: Tuples are immutable and cannot be modified'
+          ],
+          answer: 3,
+          hint: 'Notice that point uses parentheses () instead of square brackets [].',
+          explanation: 'point is a tuple. Unlike lists, tuples are immutable, so item assignment (point[0] = 99) raises a TypeError.'
+        },
+        {
+          id: 'py-6',
+          language: 'Python',
+          difficulty: 'Medium',
+          mode: 'missing-code',
+          prompt: 'Complete the list comprehension to generate [1, 4, 9, 16].',
+          code: 'squares = [x ** 2 ____ x in range(1, 5)]\nprint(squares)',
+          options: ['while', 'for', 'each', 'loop'],
+          answer: 1,
+          hint: 'List comprehensions use the same keyword as a standard Python loop.',
+          explanation: '[x ** 2 for x in range(1, 5)] iterates x through 1, 2, 3, and 4, squaring each value.'
+        },
+        {
+          id: 'py-7',
+          language: 'Python',
+          difficulty: 'Hard',
+          mode: 'predict-output',
+          prompt: 'What is printed on the SECOND print(add_item(2)) call?',
+          code: 'def add_item(val, items=[]):\n    items.append(val)\n    return items\n\nprint(add_item(1))\nprint(add_item(2))',
+          options: ['[2]', '[1, 2]', '[1]', 'TypeError'],
+          answer: 1,
+          hint: 'Default mutable arguments in Python are created only once when the function is defined.',
+          explanation: 'Because items=[] is evaluated once at definition time, both calls share and mutate the same list, yielding [1, 2].'
+        },
+        {
+          id: 'py-8',
+          language: 'Python',
+          difficulty: 'Hard',
+          mode: 'missing-code',
+          prompt: 'Which dictionary method safely returns 0 when key "c" does not exist?',
+          code: 'data = {"a": 1, "b": 2}\nvalue = data.____("c", 0)\nprint(value)  # Output: 0',
+          options: ['fetch', 'find', 'get', 'default'],
+          answer: 2,
+          hint: 'Unlike data["c"], this method avoids raising a KeyError.',
+          explanation: 'dict.get(key, default) returns the value if the key exists, or the fallback default value (0) if it does not.'
+        },
+        {
+          id: 'py-9',
+          language: 'Python',
+          difficulty: 'Hard',
+          mode: 'quiz',
+          prompt: 'What will this comparison output?',
+          code: 'a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a == b, a is b)',
+          options: ['True False', 'False True', 'True True', 'False False'],
+          answer: 2,
+          hint: 'Assigning b = a copies the reference, not the list itself.',
+          explanation: 'Both a and b point to the exact same list object in memory, so both value equality (==) and identity (is) are True.'
+        },
+
+        // ---------------- JAVA (9) ----------------
+        {
+          id: 'jv-1',
+          language: 'Java',
+          difficulty: 'Easy',
+          mode: 'quiz',
+          prompt: 'Which keyword makes a variable a constant whose value cannot be reassigned in Java?',
+          code: '____ int MAX_USERS = 100;',
+          options: ['const', 'static', 'final', 'immutable'],
+          answer: 2,
+          hint: 'Java uses a different keyword than C++ or JavaScript.',
+          explanation: 'In Java, the final keyword prevents a variable from being reassigned after initialization.'
+        },
+        {
+          id: 'jv-2',
+          language: 'Java',
+          difficulty: 'Easy',
+          mode: 'find-error',
+          prompt: 'Find the compilation error in this Java program.',
+          code: '1: public class Main {\n2:     public static void main(String[] args) {\n3:         int score = 95\n4:         System.out.println(score);\n5:     }\n6: }',
+          options: [
+            'Line 1: class must be lowercase',
+            'Line 3: Missing semicolon (;) at the end of the statement',
+            'Line 4: println is invalid',
+            'Line 2: main must return int'
+          ],
+          answer: 1,
+          hint: 'Check the end of Line 3.',
+          explanation: 'Every statement in Java must end with a semicolon (;). Line 3 is missing one after 95.'
+        },
+        {
+          id: 'jv-3',
+          language: 'Java',
+          difficulty: 'Easy',
+          mode: 'predict-output',
+          prompt: 'What is the output of dividing two int values in Java?',
+          code: 'int a = 7;\nint b = 2;\nSystem.out.println(a / b);',
+          options: ['3.5', '3', '4', '3.0'],
+          answer: 1,
+          hint: 'Integer division drops the fractional remainder.',
+          explanation: 'Because both a and b are int, Java performs integer division and truncates 3.5 down to 3.'
+        },
+        {
+          id: 'jv-4',
+          language: 'Java',
+          difficulty: 'Medium',
+          mode: 'missing-code',
+          prompt: 'Fill in the blank to compare the actual text content of two String objects.',
+          code: 'String s1 = new String("Code");\nString s2 = new String("Code");\nif (s1.____(s2)) {\n    System.out.println("Match!");\n}',
+          options: ['same', 'equals', 'compare', 'match'],
+          answer: 1,
+          hint: 'Using == checks object references; this method checks character values.',
+          explanation: 's1.equals(s2) compares the character sequence inside both String objects and returns true.'
+        },
+        {
+          id: 'jv-5',
+          language: 'Java',
+          difficulty: 'Medium',
+          mode: 'predict-output',
+          prompt: 'What is printed to the console?',
+          code: 'int x = 5;\nSystem.out.println(x++ + ++x);',
+          options: ['10', '11', '12', '13'],
+          answer: 2,
+          hint: 'x++ uses 5 then increments x to 6; ++x increments x to 7 first.',
+          explanation: 'x++ evaluates to 5 (x becomes 6). Then ++x increments x to 7 and evaluates to 7. 5 + 7 = 12.'
+        },
+        {
+          id: 'jv-6',
+          language: 'Java',
+          difficulty: 'Medium',
+          mode: 'find-error',
+          prompt: 'What bug occurs when running this loop?',
+          code: '1: int[] nums = {10, 20, 30};\n2: for (int i = 0; i <= nums.length; i++) {\n3:     System.out.println(nums[i]);\n4: }',
+          options: [
+            'Line 1: Array initialization syntax is invalid',
+            'Line 2: Using <= causes ArrayIndexOutOfBoundsException',
+            'Line 2: length must be called as length()',
+            'Line 3: Cannot print an int array element'
+          ],
+          answer: 1,
+          hint: 'An array of length 3 has valid indices 0, 1, and 2.',
+          explanation: 'When i reaches nums.length (3), nums[3] is out of bounds. The condition should be i < nums.length.'
+        },
+        {
+          id: 'jv-7',
+          language: 'Java',
+          difficulty: 'Hard',
+          mode: 'quiz',
+          prompt: 'Which statement about ArrayList in Java is true?',
+          code: 'List<Integer> list = new ArrayList<>();',
+          options: [
+            'ArrayList provides O(1) random access by index',
+            'ArrayList cannot store duplicate elements',
+            'ArrayList only stores primitive int values',
+            'ArrayList has a fixed size that cannot grow'
+          ],
+          answer: 0,
+          hint: 'ArrayList is backed by a resizable array.',
+          explanation: 'Because ArrayList is backed by an internal array, calling list.get(index) takes O(1) constant time.'
+        },
+        {
+          id: 'jv-8',
+          language: 'Java',
+          difficulty: 'Hard',
+          mode: 'missing-code',
+          prompt: 'Which keyword makes Dog inherit from the Animal class?',
+          code: 'class Animal {\n    void speak() { System.out.println("..."); }\n}\nclass Dog ____ Animal {\n    @Override\n    void speak() { System.out.println("Woof!"); }\n}',
+          options: ['implements', 'inherits', 'extends', 'super'],
+          answer: 2,
+          hint: 'Interfaces use implements; classes inherit from classes using a different keyword.',
+          explanation: 'In Java, a subclass inherits from a superclass using the extends keyword.'
+        },
+        {
+          id: 'jv-9',
+          language: 'Java',
+          difficulty: 'Hard',
+          mode: 'predict-output',
+          prompt: 'What is the exact output of this try-catch-finally block?',
+          code: 'try {\n    int res = 10 / 0;\n    System.out.print("A");\n} catch (ArithmeticException e) {\n    System.out.print("B");\n} finally {\n    System.out.print("C");\n}',
+          options: ['AB', 'BC', 'ABC', 'B'],
+          answer: 1,
+          hint: 'The exception happens before "A", and finally always executes.',
+          explanation: '10 / 0 throws ArithmeticException before printing "A". catch prints "B", and finally runs afterward to print "C".'
+        },
+
+        // ---------------- C (9) ----------------
+        {
+          id: 'c-1',
+          language: 'C',
+          difficulty: 'Easy',
+          mode: 'missing-code',
+          prompt: 'Which format specifier prints an int variable in printf?',
+          code: '#include <stdio.h>\nint main() {\n    int age = 21;\n    printf("Age: ____\\n", age);\n    return 0;\n}',
+          options: ['%s', '%f', '%d', '%c'],
+          answer: 2,
+          hint: '"d" stands for decimal integer.',
+          explanation: '%d is the standard printf format specifier for signed decimal integers (int).'
+        },
+        {
+          id: 'c-2',
+          language: 'C',
+          difficulty: 'Easy',
+          mode: 'find-error',
+          prompt: 'Find the bug in the scanf call.',
+          code: '1: #include <stdio.h>\n2: int main() {\n3:     int num;\n4:     scanf("%d", num);\n5:     return 0;\n6: }',
+          options: [
+            'Line 1: stdio.h is not needed for scanf',
+            'Line 4: Missing & (address-of operator) before num',
+            'Line 3: int variables must be initialized to 0',
+            'Line 5: main must return 1'
+          ],
+          answer: 1,
+          hint: 'scanf needs the memory address of the variable so it can write to it.',
+          explanation: 'scanf("%d", &num) requires &num to pass the memory address of num.'
+        },
+        {
+          id: 'c-3',
+          language: 'C',
+          difficulty: 'Easy',
+          mode: 'predict-output',
+          prompt: 'What does this C code print?',
+          code: 'int x = 10;\nif (x = 0) {\n    printf("True");\n} else {\n    printf("False");\n}',
+          options: ['True', 'False', 'Compile Error', '0'],
+          answer: 1,
+          hint: 'Notice it uses single = (assignment), not == (comparison).',
+          explanation: 'x = 0 assigns 0 to x and evaluates to 0, which is falsy in C, so the else branch runs and prints "False".'
+        },
+        {
+          id: 'c-4',
+          language: 'C',
+          difficulty: 'Medium',
+          mode: 'quiz',
+          prompt: 'What value does *(arr + 2) evaluate to?',
+          code: 'int arr[5] = {10, 20, 30, 40, 50};\nprintf("%d", *(arr + 2));',
+          options: ['10', '20', '30', 'Memory address of arr'],
+          answer: 2,
+          hint: 'Pointer arithmetic moves by whole elements: *(arr + i) equals arr[i].',
+          explanation: 'arr points to index 0. Adding 2 moves two int elements forward to arr[2], which is 30.'
+        },
+        {
+          id: 'c-5',
+          language: 'C',
+          difficulty: 'Medium',
+          mode: 'missing-code',
+          prompt: 'Fill in the operator used to get the byte size of int.',
+          code: 'int *ptr = (int *)malloc(5 * ____(int));',
+          options: ['len', 'sizeof', 'bytes', 'typeof'],
+          answer: 1,
+          hint: 'This compile-time C operator returns memory size in bytes.',
+          explanation: 'sizeof(int) returns the number of bytes occupied by one int on the target platform.'
+        },
+        {
+          id: 'c-6',
+          language: 'C',
+          difficulty: 'Medium',
+          mode: 'find-error',
+          prompt: 'What subtle bug exists on Line 1?',
+          code: '1: char name[5] = "Hello";\n2: printf("%s", name);',
+          options: [
+            'Strings in C must use single quotes',
+            '"Hello" needs 6 bytes to hold the null terminator \\0',
+            'printf requires %c for char arrays',
+            'char arrays cannot be initialized inline'
+          ],
+          answer: 1,
+          hint: 'C strings end with a hidden "\\0" character.',
+          explanation: '"Hello" has 5 letters plus the null terminator "\\0", requiring char name[6] so printf knows where the string ends.'
+        },
+        {
+          id: 'c-7',
+          language: 'C',
+          difficulty: 'Hard',
+          mode: 'predict-output',
+          prompt: 'What is the result of the bitwise AND operation (5 & 3)?',
+          code: 'int a = 5, b = 3;\nprintf("%d", a & b);',
+          options: ['7', '1', '0', '15'],
+          answer: 1,
+          hint: 'Convert to binary: 5 is 101 and 3 is 011.',
+          explanation: 'Bitwise AND of 101 (5) and 011 (3) compares each bit: only the rightmost bit is 1 in both, giving 001 = 1.'
+        },
+        {
+          id: 'c-8',
+          language: 'C',
+          difficulty: 'Hard',
+          mode: 'find-error',
+          prompt: 'Why is returning &local dangerous in C?',
+          code: '1: int* getPointer() {\n2:     int local = 42;\n3:     return &local;\n4: }',
+          options: [
+            'int* functions cannot return addresses',
+            'local is destroyed when the function exits, leaving a dangling pointer',
+            'Line 3 needs a dereference *',
+            '42 overflows a standard int'
+          ],
+          answer: 1,
+          hint: 'Think about the lifetime of stack variables after a function returns.',
+          explanation: 'local lives on the stack frame of getPointer(). Once the function returns, its memory is reclaimed, so &local is a dangling pointer.'
+        },
+        {
+          id: 'c-9',
+          language: 'C',
+          difficulty: 'Hard',
+          mode: 'quiz',
+          prompt: 'Which standard C function releases memory allocated by malloc or calloc?',
+          code: 'int *p = malloc(sizeof(int) * 10);\n// release memory when finished',
+          options: ['delete(p);', 'release(p);', 'free(p);', 'dealloc(p);'],
+          answer: 2,
+          hint: 'It is declared in <stdlib.h> alongside malloc.',
+          explanation: 'free(p) deallocates heap memory previously allocated by malloc, calloc, or realloc.'
+        },
+
+        // ---------------- C++ (9) ----------------
+        {
+          id: 'cpp-1',
+          language: 'C++',
+          difficulty: 'Easy',
+          mode: 'missing-code',
+          prompt: 'Fill in the standard output stream object in C++.',
+          code: '#include <iostream>\nint main() {\n    std::____ << "Hello, C++!" << std::endl;\n    return 0;\n}',
+          options: ['cin', 'print', 'cout', 'out'],
+          answer: 2,
+          hint: 'Short for "character output".',
+          explanation: 'std::cout is the standard character output stream in C++, used with the << insertion operator.'
+        },
+        {
+          id: 'cpp-2',
+          language: 'C++',
+          difficulty: 'Easy',
+          mode: 'find-error',
+          prompt: 'Which line uses the wrong stream operator?',
+          code: '1: #include <iostream>\n2: using namespace std;\n3: int main() {\n4:     int x = 10;\n5:     cin << x;\n6:     return 0;\n7: }',
+          options: [
+            'Line 2: Missing braces after std',
+            'Line 4: int cannot store 10',
+            'Line 5: cin must use >> (extraction operator), not <<',
+            'Line 6: return 0 is not allowed in C++'
+          ],
+          answer: 2,
+          hint: 'Data flows OUT of cin into the variable x.',
+          explanation: 'std::cin uses the >> extraction operator (cin >> x;), whereas std::cout uses <<.'
+        },
+        {
+          id: 'cpp-3',
+          language: 'C++',
+          difficulty: 'Easy',
+          mode: 'predict-output',
+          prompt: 'What will this C++ vector program print?',
+          code: '#include <iostream>\n#include <vector>\nint main() {\n    std::vector<int> v = {2, 4, 6};\n    v.push_back(8);\n    std::cout << v.size();\n}',
+          options: ['3', '4', '8', '20'],
+          answer: 1,
+          hint: 'push_back adds one element to the end of the vector.',
+          explanation: 'v starts with 3 elements and push_back(8) appends a 4th element, so v.size() returns 4.'
+        },
+        {
+          id: 'cpp-4',
+          language: 'C++',
+          difficulty: 'Medium',
+          mode: 'quiz',
+          prompt: 'What does the & symbol in int &a mean in this function parameter?',
+          code: 'void swap(int &a, int &b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}',
+          options: [
+            'Bitwise AND operator',
+            'Pass-by-reference (alias to the caller variable)',
+            'Pointer dereference',
+            'Dynamic heap allocation'
+          ],
+          answer: 1,
+          hint: 'Without it, swap would only modify local copies.',
+          explanation: 'int &a declares a reference parameter, allowing swap() to modify the original variables passed by the caller.'
+        },
+        {
+          id: 'cpp-5',
+          language: 'C++',
+          difficulty: 'Medium',
+          mode: 'missing-code',
+          prompt: 'Which access specifier allows speed and drive() to be used outside the Car class?',
+          code: 'class Car {\n____:\n    int speed = 120;\n    void drive() { /* ... */ }\n};',
+          options: ['private', 'protected', 'public', 'open'],
+          answer: 2,
+          hint: 'By default, members of a C++ class are private.',
+          explanation: 'Members under public: are accessible from outside the class.'
+        },
+        {
+          id: 'cpp-6',
+          language: 'C++',
+          difficulty: 'Medium',
+          mode: 'predict-output',
+          prompt: 'What is printed to std::cout?',
+          code: 'int x = 10;\nint &ref = x;\nref = 25;\nstd::cout << x;',
+          options: ['10', '25', 'Memory address', 'Compile Error'],
+          answer: 1,
+          hint: 'ref is an alias for x, not a separate copy.',
+          explanation: 'Changing ref to 25 directly updates x because ref refers to the same variable, so 25 is printed.'
+        },
+        {
+          id: 'cpp-7',
+          language: 'C++',
+          difficulty: 'Hard',
+          mode: 'find-error',
+          prompt: 'Why does the override keyword on Line 7 cause a compile error?',
+          code: '1: class Base {\n2: public:\n3:     virtual void show() { std::cout << "Base"; }\n4: };\n5: class Derived : public Base {\n6: public:\n7:     void show() const override { std::cout << "Derived"; }\n8: };',
+          options: [
+            'Base::show() is not marked virtual',
+            'Derived::show() adds const so its signature does not match Base::show()',
+            'Derived cannot inherit publicly from Base',
+            'virtual functions cannot have a body'
+          ],
+          answer: 1,
+          hint: 'Compare the function qualifiers on Line 3 and Line 7.',
+          explanation: 'const is part of a member function signature. Because Base::show() is non-const, Derived::show() const does not override it.'
+        },
+        {
+          id: 'cpp-8',
+          language: 'C++',
+          difficulty: 'Hard',
+          mode: 'quiz',
+          prompt: 'Which C++ smart pointer enforces sole ownership (cannot be copied, only moved)?',
+          code: 'auto ptr = std::____<int>(42);',
+          options: ['make_shared', 'weak_ptr', 'make_unique', 'auto_ptr'],
+          answer: 2,
+          hint: 'It constructs a std::unique_ptr safely in modern C++.',
+          explanation: 'std::make_unique creates a std::unique_ptr, which owns its resource exclusively and cannot be copied.'
+        },
+        {
+          id: 'cpp-9',
+          language: 'C++',
+          difficulty: 'Hard',
+          mode: 'missing-code',
+          prompt: 'Complete the C++ function template parameter declaration.',
+          code: 'template <____ T>\nT add(T a, T b) {\n    return a + b;\n}',
+          options: ['generic', 'typename', 'template', 'type'],
+          answer: 1,
+          hint: 'Either class or this modern keyword works inside template <...>.',
+          explanation: 'template <typename T> declares T as a type template parameter so add() works with int, double, std::string, etc.'
+        },
+
+        // ---------------- JAVASCRIPT (9) ----------------
+        {
+          id: 'js-1',
+          language: 'JavaScript',
+          difficulty: 'Easy',
+          mode: 'predict-output',
+          prompt: 'What does typeof null return in JavaScript?',
+          code: 'console.log(typeof null);',
+          options: ['"null"', '"undefined"', '"object"', '"boolean"'],
+          answer: 2,
+          hint: 'This is a famous historical quirk in JavaScript since 1995.',
+          explanation: 'Due to a legacy bug preserved for backwards compatibility, typeof null evaluates to "object".'
+        },
+        {
+          id: 'js-2',
+          language: 'JavaScript',
+          difficulty: 'Easy',
+          mode: 'missing-code',
+          prompt: 'Which array method returns a new array with every element transformed?',
+          code: 'const nums = [1, 2, 3];\nconst doubled = nums.____(n => n * 2);\nconsole.log(doubled); // [2, 4, 6]',
+          options: ['forEach', 'filter', 'map', 'reduce'],
+          answer: 2,
+          hint: 'forEach returns undefined; this method maps each item to a new value.',
+          explanation: 'Array.prototype.map() creates and returns a new array populated with the results of calling the callback on every element.'
+        },
+        {
+          id: 'js-3',
+          language: 'JavaScript',
+          difficulty: 'Easy',
+          mode: 'find-error',
+          prompt: 'What happens when this JavaScript snippet runs?',
+          code: '1: const maxScore = 100;\n2: maxScore = 150;\n3: console.log(maxScore);',
+          options: [
+            'Line 1: const only accepts strings',
+            'Line 2: TypeError — cannot reassign a const variable',
+            'Line 3: console.log cannot print numbers',
+            'No error — logs 150'
+          ],
+          answer: 1,
+          hint: 'Variables declared with const cannot be reassigned.',
+          explanation: 'Reassigning a const binding throws "TypeError: Assignment to constant variable." Use let if the value needs to change.'
+        },
+        {
+          id: 'js-4',
+          language: 'JavaScript',
+          difficulty: 'Medium',
+          mode: 'predict-output',
+          prompt: 'What are the two outputs logged in order?',
+          code: 'console.log(5 + "3");\nconsole.log(5 - "3");',
+          options: ['"53" and 2', '8 and 2', '"53" and "5-3"', 'NaN and 2'],
+          answer: 0,
+          hint: '+ concatenates when one side is a string; - converts strings to numbers.',
+          explanation: '5 + "3" performs string concatenation ("53"), whereas 5 - "3" coerces "3" into the number 3 and outputs 2.'
+        },
+        {
+          id: 'js-5',
+          language: 'JavaScript',
+          difficulty: 'Medium',
+          mode: 'quiz',
+          prompt: 'What do strict (===) and loose (==) equality log here?',
+          code: 'console.log(0 === false);\nconsole.log(0 == false);',
+          options: ['true, true', 'false, true', 'true, false', 'false, false'],
+          answer: 1,
+          hint: '=== checks both type and value without type coercion.',
+          explanation: '0 === false is false (number vs boolean). 0 == false is true because == coerces false to 0.'
+        },
+        {
+          id: 'js-6',
+          language: 'JavaScript',
+          difficulty: 'Medium',
+          mode: 'missing-code',
+          prompt: 'Fill in the object destructuring variable so console.log(name) prints "Ada".',
+          code: 'const user = { name: "Ada", level: 5 };\nconst { ____, level } = user;\nconsole.log(name);',
+          options: ['user.name', 'name', '"name"', 'Ada'],
+          answer: 1,
+          hint: 'Destructuring extracts properties by their exact property identifier.',
+          explanation: 'const { name, level } = user creates a local variable named name initialized to user.name ("Ada").'
+        },
+        {
+          id: 'js-7',
+          language: 'JavaScript',
+          difficulty: 'Hard',
+          mode: 'predict-output',
+          prompt: 'In what order do the numbers log to the console?',
+          code: 'console.log("1");\nsetTimeout(() => console.log("2"), 0);\nPromise.resolve().then(() => console.log("3"));\nconsole.log("4");',
+          options: ['1, 2, 3, 4', '1, 4, 2, 3', '1, 4, 3, 2', '1, 3, 4, 2'],
+          answer: 2,
+          hint: 'Synchronous code runs first, then microtasks (Promises), then macrotasks (setTimeout).',
+          explanation: '"1" and "4" run synchronously first. Next the Promise microtask logs "3", and finally the setTimeout callback logs "2".'
+        },
+        {
+          id: 'js-8',
+          language: 'JavaScript',
+          difficulty: 'Hard',
+          mode: 'find-error',
+          prompt: 'What bug exists in fetchUser()?',
+          code: '1: async function fetchUser() {\n2:     const res = fetch("/api/user");\n3:     const data = await res.json();\n4:     return data;\n5: }',
+          options: [
+            'Line 1: async functions cannot return data',
+            'Line 2: Missing await before fetch(), so res is a Promise without .json()',
+            'Line 3: await cannot be used inside async',
+            'Line 4: Must call JSON.parse(data)'
+          ],
+          answer: 1,
+          hint: 'fetch() returns a Promise that resolves to a Response object.',
+          explanation: 'Without await on Line 2, res is a pending Promise instead of a Response, so calling res.json() throws TypeError: res.json is not a function.'
+        },
+        {
+          id: 'js-9',
+          language: 'JavaScript',
+          difficulty: 'Hard',
+          mode: 'quiz',
+          prompt: 'What does this closure output?',
+          code: 'function makeCounter() {\n    let count = 0;\n    return () => ++count;\n}\nconst counter = makeCounter();\nconsole.log(counter(), counter());',
+          options: ['0 1', '1 1', '1 2', 'ReferenceError'],
+          answer: 2,
+          hint: 'The returned arrow function remembers count, and ++count increments before returning.',
+          explanation: 'The inner function closes over count. First call increments count to 1 and returns 1; second call increments it to 2 and returns 2.'
+        }
+      ];
+
+      /* =========================================================
+         2. CONSTANTS & STORAGE KEYS
+         ========================================================= */
+      const STORAGE_LB_KEY = 'codemaster_leaderboard_v1';
+      const STORAGE_THEME_KEY = 'codemaster_theme_v1';
+      const STORAGE_NAME_KEY = 'codemaster_player_name_v1';
+
+      const DIFF_CONFIG = {
+        Easy:   { points: 100, seconds: 30, tagClass: 'tag-easy' },
+        Medium: { points: 150, seconds: 25, tagClass: 'tag-medium' },
+        Hard:   { points: 200, seconds: 20, tagClass: 'tag-hard' }
+      };
+
+      const MODE_LABELS = {
+        'quiz': 'Multiple Choice',
+        'find-error': 'Find the Error',
+        'missing-code': 'Missing Code',
+        'predict-output': 'Select Output'
+      };
+
+      const EXT_MAP = {
+        Python: 'challenge.py',
+        Java: 'Main.java',
+        C: 'main.c',
+        'C++': 'main.cpp',
+        JavaScript: 'app.js'
+      };
+
+      /* =========================================================
+         3. APPLICATION STATE
+         ========================================================= */
+      const state = {
+        config: {
+          language: 'all',
+          difficulty: 'all',
+          mode: 'all',
+          count: 10
+        },
+        soundEnabled: true,
+        theme: 'dark',
+        game: {
+          active: false,
+          playerName: 'CoderOne',
+          questions: [],
+          index: 0,
+          score: 0,
+          streak: 0,
+          bestStreak: 0,
+          correctCount: 0,
+          wrongCount: 0,
+          answered: false,
+          timerLeft: 30,
+          timerMax: 30,
+          timerId: null,
+          history: [],
+          lastSavedId: null
+        },
+        clearConfirmTimeout: null,
+        clearArmed: false
+      };
+
+      /* =========================================================
+         4. DOM REFERENCES
+         ========================================================= */
+      const el = {
+        homeScreen: document.getElementById('home-screen'),
+        gameScreen: document.getElementById('game-screen'),
+        resultsScreen: document.getElementById('results-screen'),
+
+        navHomeBtn: document.getElementById('nav-home-btn'),
+        openGuideBtn: document.getElementById('open-guide-btn'),
+        openLbBtn: document.getElementById('open-lb-btn'),
+        soundToggleBtn: document.getElementById('sound-toggle-btn'),
+        themeToggleBtn: document.getElementById('theme-toggle-btn'),
+
+        playerNameInput: document.getElementById('player-name-input'),
+        matchingCountPill: document.getElementById('matching-count-pill'),
+        statTotalQ: document.getElementById('stat-total-q'),
+        statBestScore: document.getElementById('stat-best-score'),
+        startGameBtn: document.getElementById('start-game-btn'),
+        quickPlayBtn: document.getElementById('quick-play-btn'),
+        resetFiltersBtn: document.getElementById('reset-filters-btn'),
+        homeViewLbBtn: document.getElementById('home-view-lb-btn'),
+        miniLeaderboard: document.getElementById('mini-leaderboard'),
+
+        hudProgressText: document.getElementById('hud-progress-text'),
+        hudAccuracyText: document.getElementById('hud-accuracy-text'),
+        hudProgressFill: document.getElementById('hud-progress-fill'),
+        hudScore: document.getElementById('hud-score'),
+        hudStreak: document.getElementById('hud-streak'),
+        hudTimer: document.getElementById('hud-timer'),
+        timerStripFill: document.getElementById('timer-strip-fill'),
+
+        qLangTag: document.getElementById('q-lang-tag'),
+        qModeTag: document.getElementById('q-mode-tag'),
+        qDiffTag: document.getElementById('q-diff-tag'),
+        qPointsLabel: document.getElementById('q-points-label'),
+        qPrompt: document.getElementById('q-prompt'),
+        codeFilename: document.getElementById('code-filename'),
+        qCode: document.getElementById('q-code'),
+        optionsGrid: document.getElementById('options-grid'),
+        hintBox: document.getElementById('hint-box'),
+        feedbackBox: document.getElementById('feedback-box'),
+        feedbackTitle: document.getElementById('feedback-title'),
+        feedbackExplain: document.getElementById('feedback-explain'),
+
+        hintBtn: document.getElementById('hint-btn'),
+        skipBtn: document.getElementById('skip-btn'),
+        quitGameBtn: document.getElementById('quit-game-btn'),
+        nextBtn: document.getElementById('next-btn'),
+
+        resRankBadge: document.getElementById('res-rank-badge'),
+        resScoreBig: document.getElementById('res-score-big'),
+        resSubtitle: document.getElementById('res-subtitle'),
+        resCorrect: document.getElementById('res-correct'),
+        resWrong: document.getElementById('res-wrong'),
+        resAccuracy: document.getElementById('res-accuracy'),
+        resStreak: document.getElementById('res-streak'),
+        playAgainBtn: document.getElementById('play-again-btn'),
+        resHomeBtn: document.getElementById('res-home-btn'),
+        resLbBtn: document.getElementById('res-lb-btn'),
+        toggleReviewBtn: document.getElementById('toggle-review-btn'),
+        reviewList: document.getElementById('review-list'),
+
+        lbModal: document.getElementById('lb-modal'),
+        closeLbBtn: document.getElementById('close-lb-btn'),
+        lbFilterLang: document.getElementById('lb-filter-lang'),
+        lbFilterDiff: document.getElementById('lb-filter-diff'),
+        clearLbBtn: document.getElementById('clear-lb-btn'),
+        lbTbody: document.getElementById('lb-tbody'),
+        lbEmpty: document.getElementById('lb-empty'),
+
+        guideModal: document.getElementById('guide-modal'),
+        closeGuideBtn: document.getElementById('close-guide-btn'),
+        confettiCanvas: document.getElementById('confetti-canvas')
+      };
+
+      /* =========================================================
+         5. SOUND EFFECTS (WEB AUDIO API - ZERO EXTERNAL ASSETS)
+         ========================================================= */
+      let audioCtx = null;
+
+      function playTone(freq, duration = 0.12, type = 'sine', gainVal = 0.08, delay = 0) {
+        if (!state.soundEnabled) return;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!audioCtx) audioCtx = new AudioContextClass();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+
+          const now = audioCtx.currentTime + delay;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(gainVal, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + duration);
+        } catch (_) {
+          // Ignore audio restrictions silently
+        }
+      }
+
+      function sfxCorrect() {
+        playTone(523.25, 0.1, 'triangle', 0.09, 0);
+        playTone(659.25, 0.12, 'triangle', 0.09, 0.08);
+        playTone(783.99, 0.18, 'triangle', 0.1, 0.16);
+      }
+
+      function sfxWrong() {
+        playTone(220, 0.14, 'sawtooth', 0.06, 0);
+        playTone(175, 0.2, 'sawtooth', 0.06, 0.11);
+      }
+
+      function sfxTick() {
+        playTone(880, 0.05, 'sine', 0.03, 0);
+      }
+
+      function sfxVictory() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+          playTone(f, 0.2, 'triangle', 0.09, idx * 0.1);
+        });
+      }
+
+      /* =========================================================
+         6. UTILITIES: HTML ESCAPE, SYNTAX HIGHLIGHTER, SHUFFLE
+         ========================================================= */
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function highlightCode(code) {
+        // Single-pass tokenizer avoids re-matching HTML attributes
+        const tokenRegex =
+          /(#[^\n]*|\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|____|\b(def|return|if|elif|else|for|while|in|import|from|class|public|static|void|int|char|double|boolean|String|new|try|catch|finally|extends|implements|const|let|var|function|async|await|console|using|namespace|std|template|typename|virtual|override|include|auto|true|false|null|None|True|False)\b|\b(\d+(?:\.\d+)?)\b/g;
+
+        let html = '';
+        let lastIndex = 0;
+        let match;
+
+        while ((match = tokenRegex.exec(code)) !== null) {
+          if (match.index > lastIndex) {
+            html += escapeHtml(code.slice(lastIndex, match.index));
+          }
+          const raw = match[0];
+          if (match[1]) {
+            html += `<span class="tok-cmt">${escapeHtml(raw)}</span>`;
+          } else if (match[2]) {
+            html += `<span class="tok-str">${escapeHtml(raw)}</span>`;
+          } else if (raw === '____') {
+            html += `<span class="tok-blank">____</span>`;
+          } else if (match[3]) {
+            html += `<span class="tok-kw">${escapeHtml(raw)}</span>`;
+          } else if (match[4]) {
+            html += `<span class="tok-num">${escapeHtml(raw)}</span>`;
+          } else {
+            html += escapeHtml(raw);
+          }
+          lastIndex = tokenRegex.lastIndex;
+        }
+
+        if (lastIndex < code.length) {
+          html += escapeHtml(code.slice(lastIndex));
+        }
+        return html;
+      }
+
+      function shuffleArray(arr) {
+        const copy = arr.slice();
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      /* =========================================================
+         7. THEME & NAVIGATION HELPERS
+         ========================================================= */
+      function applyTheme(theme) {
+        state.theme = theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        el.themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        el.themeToggleBtn.title = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        try {
+          localStorage.setItem(STORAGE_THEME_KEY, theme);
+        } catch (_) {}
+      }
+
+      function showScreen(screenId) {
+        [el.homeScreen, el.gameScreen, el.resultsScreen].forEach(sec => {
+          sec.classList.toggle('active', sec.id === screenId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      /* =========================================================
+         8. LEADERBOARD (LOCALSTORAGE)
+         ========================================================= */
+      function loadLeaderboard() {
+        try {
+          const raw = localStorage.getItem(STORAGE_LB_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveScoreToLeaderboard(entry) {
+        const list = loadLeaderboard();
+        list.push(entry);
+        list.sort((a, b) => b.score - a.score || b.accuracy - a.accuracy || b.timestamp - a.timestamp);
+        const trimmed = list.slice(0, 50);
+        try {
+          localStorage.setItem(STORAGE_LB_KEY, JSON.stringify(trimmed));
+        } catch (_) {}
+        renderHomeStatsAndMiniLb();
+      }
+
+      function renderHomeStatsAndMiniLb() {
+        const list = loadLeaderboard();
+        el.statTotalQ.textContent = String(QUESTIONS.length);
+        el.statBestScore.textContent = list.length ? String(list[0].score) : '0';
+
+        if (!list.length) {
+          el.miniLeaderboard.innerHTML =
+            '<div class="empty-state">No high scores yet. Start a challenge to set the record!</div>';
+          return;
+        }
+
+        const medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+        el.miniLeaderboard.innerHTML = list
+          .slice(0, 5)
+          .map((item, i) => `
+            <div class="mini-lb-row">
+              <div class="mini-lb-left">
+                <span>${medals[i] || `${i + 1}.`}</span>
+                <div>
+                  <div class="mini-lb-name">${escapeHtml(item.name)}</div>
+                  <div class="mini-lb-meta">${escapeHtml(item.language)} • ${escapeHtml(item.difficulty)} • ${item.accuracy}%</div>
+                </div>
+              </div>
+              <div class="mini-lb-score">${item.score} pts</div>
+            </div>
+          `)
+          .join('');
+      }
+
+      function renderLeaderboardModal() {
+        const langFilter = el.lbFilterLang.value;
+        const diffFilter = el.lbFilterDiff.value;
+        const list = loadLeaderboard().filter(item => {
+          const matchLang = langFilter === 'all' || item.language === langFilter;
+          const matchDiff = diffFilter === 'all' || item.difficulty === diffFilter;
+          return matchLang && matchDiff;
+        });
+
+        if (!list.length) {
+          el.lbTbody.innerHTML = '';
+          el.lbEmpty.style.display = 'block';
+          return;
+        }
+
+        el.lbEmpty.style.display = 'none';
+        const medals = ['🥇', '🥈', '🥉'];
+        el.lbTbody.innerHTML = list
+          .map((item, idx) => {
+            const isRecent = state.game.lastSavedId && item.id === state.game.lastSavedId;
+            const rankText = idx < 3 ? medals[idx] : `#${idx + 1}`;
+            return `
+              <tr class="${isRecent ? 'highlight-row' : ''}">
+                <td><strong>${rankText}</strong></td>
+                <td><strong>${escapeHtml(item.name)}</strong></td>
+                <td><strong>${item.score}</strong> pts</td>
+                <td>${item.accuracy}%</td>
+                <td>${escapeHtml(item.language)}</td>
+                <td>${escapeHtml(item.difficulty)}</td>
+                <td>${escapeHtml(item.date)}</td>
+              </tr>
+            `;
+          })
+          .join('');
+      }
+
+      /* =========================================================
+         9. HOME SETUP FILTERS
+         ========================================================= */
+      function getFilteredQuestions(cfg = state.config) {
+        return QUESTIONS.filter(q => {
+          const okLang = cfg.language === 'all' || q.language === cfg.language;
+          const okDiff = cfg.difficulty === 'all' || q.difficulty === cfg.difficulty;
+          const okMode = cfg.mode === 'all' || q.mode === cfg.mode;
+          return okLang && okDiff && okMode;
+        });
+      }
+
+      function updateMatchingPill() {
+        const matches = getFilteredQuestions().length;
+        el.matchingCountPill.textContent = `${matches} Ready`;
+        el.matchingCountPill.classList.toggle('empty', matches === 0);
+        el.startGameBtn.disabled = matches === 0;
+      }
+
+      function setPillSelection(groupId, value) {
+        const container = document.getElementById(groupId);
+        container.querySelectorAll('.choice-pill').forEach(btn => {
+          btn.classList.toggle('selected', btn.dataset.value === String(value));
+        });
+      }
+
+      function bindPillGroup(groupId, configKey, isNumeric = false) {
+        const container = document.getElementById(groupId);
+        container.addEventListener('click', evt => {
+          const btn = evt.target.closest('.choice-pill');
+          if (!btn) return;
+          const val = isNumeric ? Number(btn.dataset.value) : btn.dataset.value;
+          state.config[configKey] = val;
+          setPillSelection(groupId, btn.dataset.value);
+          updateMatchingPill();
+        });
+      }
+
+      function resetHomeFilters() {
+        state.config = { language: 'all', difficulty: 'all', mode: 'all', count: 10 };
+        setPillSelection('lang-pills', 'all');
+        setPillSelection('diff-pills', 'all');
+        setPillSelection('mode-pills', 'all');
+        setPillSelection('count-pills', '10');
+        updateMatchingPill();
+      }
+
+      /* =========================================================
+         10. GAMEPLAY ENGINE
+         ========================================================= */
+      function stopTimer() {
+        if (state.game.timerId) {
+          clearInterval(state.game.timerId);
+          state.game.timerId = null;
+        }
+      }
+
+      function startNewGame(overrideConfig = null) {
+        stopTimer();
+        const rawName = el.playerNameInput.value.trim();
+        const playerName = rawName || 'CoderOne';
+        try {
+          localStorage.setItem(STORAGE_NAME_KEY, playerName);
+        } catch (_) {}
+
+        const cfg = overrideConfig || state.config;
+        const pool = shuffleArray(getFilteredQuestions(cfg));
+        if (!pool.length) return;
+
+        const targetCount = Math.min(cfg.count, pool.length);
+        state.game = {
+          active: true,
+          playerName,
+          questions: pool.slice(0, targetCount),
+          index: 0,
+          score: 0,
+          streak: 0,
+          bestStreak: 0,
+          correctCount: 0,
+          wrongCount: 0,
+          answered: false,
+          timerLeft: 30,
+          timerMax: 30,
+          timerId: null,
+          history: [],
+          lastSavedId: null,
+          usedConfig: { ...cfg }
+        };
+
+        showScreen('game-screen');
+        renderCurrentQuestion();
+      }
+
+      function updateHud() {
+        const g = state.game;
+        const total = g.questions.length;
+        const currentNum = g.index + 1;
+        const answeredTotal = g.correctCount + g.wrongCount;
+        const acc = answeredTotal > 0 ? Math.round((g.correctCount / answeredTotal) * 100) : 100;
+
+        el.hudProgressText.textContent = `Question ${currentNum} of ${total}`;
+        el.hudAccuracyText.textContent = `Accuracy: ${acc}%`;
+        const progressPct = ((g.index + (g.answered ? 1 : 0)) / total) * 100;
+        el.hudProgressFill.style.width = `${progressPct}%`;
+
+        el.hudScore.textContent = `⭐ ${g.score} pts`;
+        el.hudStreak.textContent = `🔥 ${g.streak}x`;
+      }
+
+      function updateTimerVisuals() {
+        const g = state.game;
+        el.hudTimer.textContent = `⏱️ ${g.timerLeft}s`;
+        const pct = Math.max(0, (g.timerLeft / g.timerMax) * 100);
+        el.timerStripFill.style.width = `${pct}%`;
+
+        el.hudTimer.classList.remove('warning', 'danger');
+        if (g.timerLeft <= 5) {
+          el.hudTimer.classList.add('danger');
+          el.timerStripFill.style.background = 'linear-gradient(90deg, #ef4444, #f97316)';
+        } else if (g.timerLeft <= 10) {
+          el.hudTimer.classList.add('warning');
+          el.timerStripFill.style.background = 'linear-gradient(90deg, #f59e0b, #eab308)';
+        } else {
+          el.timerStripFill.style.background = 'linear-gradient(90deg, #10b981, #3b82f6)';
+        }
+      }
+
+      function startQuestionTimer(seconds) {
+        stopTimer();
+        state.game.timerMax = seconds;
+        state.game.timerLeft = seconds;
+        updateTimerVisuals();
+
+        state.game.timerId = setInterval(() => {
+          if (!state.game.active || state.game.answered) {
+            stopTimer();
+            return;
+          }
+          state.game.timerLeft -= 1;
+          updateTimerVisuals();
+
+          if (state.game.timerLeft > 0 && state.game.timerLeft <= 5) {
+            sfxTick();
+          }
+
+          if (state.game.timerLeft <= 0) {
+            stopTimer();
+            handleAnswer(-1, true);
+          }
+        }, 1000);
+      }
+
+      function renderCurrentQuestion() {
+        const g = state.game;
+        const q = g.questions[g.index];
+        const diffMeta = DIFF_CONFIG[q.difficulty];
+
+        g.answered = false;
+        updateHud();
+
+        // Tags & Labels
+        el.qLangTag.textContent = q.language;
+        el.qModeTag.textContent = MODE_LABELS[q.mode];
+        el.qDiffTag.textContent = q.difficulty;
+        el.qDiffTag.className = `tag ${diffMeta.tagClass}`;
+        el.qPointsLabel.textContent = `+${diffMeta.points} pts`;
+
+        el.qPrompt.textContent = q.prompt;
+        el.codeFilename.textContent = EXT_MAP[q.language] || 'snippet.txt';
+        el.qCode.innerHTML = highlightCode(q.code);
+
+        // Reset Hint & Feedback
+        el.hintBox.classList.remove('visible');
+        el.hintBox.textContent = '';
+        el.hintBtn.disabled = false;
+        el.skipBtn.disabled = false;
+        el.feedbackBox.classList.remove('visible', 'is-correct', 'is-wrong');
+
+        // Next Button Label
+        const isLast = g.index === g.questions.length - 1;
+        el.nextBtn.textContent = isLast ? '🏁 View Results' : 'Next Question →';
+        el.nextBtn.disabled = true;
+
+        // Render 4 Options
+        const keys = ['A', 'B', 'C', 'D'];
+        el.optionsGrid.innerHTML = q.options
+          .map((opt, idx) => `
+            <button type="button" class="option-btn" data-index="${idx}">
+              <span class="option-key">${keys[idx]}</span>
+              <span class="option-text">${escapeHtml(opt)}</span>
+            </button>
+          `)
+          .join('');
+
+        startQuestionTimer(diffMeta.seconds);
+      }
+
+      function handleAnswer(selectedIndex, timedOut = false, skipped = false) {
+        const g = state.game;
+        if (!g.active || g.answered) return;
+
+        g.answered = true;
+        stopTimer();
+
+        const q = g.questions[g.index];
+        const diffMeta = DIFF_CONFIG[q.difficulty];
+        const isCorrect = !timedOut && !skipped && selectedIndex === q.answer;
+
+        let pointsEarned = 0;
+        if (isCorrect) {
+          g.streak += 1;
+          g.bestStreak = Math.max(g.bestStreak, g.streak);
+          g.correctCount += 1;
+          const streakBonus = (g.streak - 1) * 25;
+          pointsEarned = diffMeta.points + streakBonus;
+          g.score += pointsEarned;
+          sfxCorrect();
+        } else {
+          g.streak = 0;
+          g.wrongCount += 1;
+          sfxWrong();
+        }
+
+        // Style option buttons
+        const optionBtns = el.optionsGrid.querySelectorAll('.option-btn');
+        optionBtns.forEach((btn, idx) => {
+          btn.disabled = true;
+          if (idx === q.answer) {
+            btn.classList.add('correct');
+          } else if (idx === selectedIndex && !isCorrect) {
+            btn.classList.add('wrong');
+          }
+        });
+
+        // Feedback Banner
+        el.feedbackBox.classList.add('visible', isCorrect ? 'is-correct' : 'is-wrong');
+        if (isCorrect) {
+          const bonusText = g.streak > 1 ? ` (includes +${(g.streak - 1) * 25} streak bonus!)` : '';
+          el.feedbackTitle.textContent = `✅ Correct! +${pointsEarned} pts${bonusText}`;
+        } else if (timedOut) {
+          el.feedbackTitle.textContent = `⏱️ Time's Up! Correct answer: ${q.options[q.answer]}`;
+        } else if (skipped) {
+          el.feedbackTitle.textContent = `⏭️ Skipped! Correct answer: ${q.options[q.answer]}`;
+        } else {
+          el.feedbackTitle.textContent = `❌ Wrong Answer! Correct answer: ${q.options[q.answer]}`;
+        }
+        el.feedbackExplain.textContent = q.explanation;
+
+        // Save history for review
+        g.history.push({
+          question: q,
+          selectedIndex,
+          timedOut,
+          skipped,
+          isCorrect,
+          pointsEarned
+        });
+
+        el.hintBtn.disabled = true;
+        el.skipBtn.disabled = true;
+        el.nextBtn.disabled = false;
+        updateHud();
+      }
+
+      function advanceQuestion() {
+        const g = state.game;
+        if (!g.active) return;
+
+        if (g.index < g.questions.length - 1) {
+          g.index += 1;
+          renderCurrentQuestion();
+        } else {
+          finishGame();
+        }
+      }
+
+      /* =========================================================
+         11. RESULTS & CONFETTI CELEBRATION
+         ========================================================= */
+      function getPerformanceTier(accuracy) {
+        if (accuracy >= 90) return { badge: '👑 Code Grandmaster', msg: 'Phenomenal mastery! You crushed almost every challenge.' };
+        if (accuracy >= 75) return { badge: '🚀 Senior Debugger', msg: 'Awesome job! Strong coding instincts and sharp focus.' };
+        if (accuracy >= 50) return { badge: '⚡ Rising Developer', msg: 'Solid run! Review the explanations below to level up even faster.' };
+        return { badge: '🌱 Code Apprentice', msg: 'Good practice! Every bug you spot makes you a stronger coder.' };
+      }
+
+      function finishGame() {
+        stopTimer();
+        const g = state.game;
+        g.active = false;
+
+        const total = g.questions.length;
+        const accuracy = total > 0 ? Math.round((g.correctCount / total) * 100) : 0;
+        const tier = getPerformanceTier(accuracy);
+
+        const cfg = g.usedConfig;
+        const langLabel = cfg.language === 'all' ? 'All Languages' : cfg.language;
+        const diffLabel = cfg.difficulty === 'all' ? 'Mixed' : cfg.difficulty;
+        const entryId = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        g.lastSavedId = entryId;
+
+        saveScoreToLeaderboard({
+          id: entryId,
+          name: g.playerName,
+          score: g.score,
+          accuracy,
+          language: langLabel,
+          difficulty: diffLabel,
+          date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
+          timestamp: Date.now()
+        });
+
+        el.resRankBadge.textContent = tier.badge;
+        el.resScoreBig.textContent = `${g.score} pts`;
+        el.resSubtitle.textContent = `${g.playerName}: ${tier.msg}`;
+        el.resCorrect.textContent = String(g.correctCount);
+        el.resWrong.textContent = String(g.wrongCount);
+        el.resAccuracy.textContent = `${accuracy}%`;
+        el.resStreak.textContent = `${g.bestStreak}x`;
+
+        // Render Answer Review
+        el.reviewList.style.display = 'flex';
+        el.toggleReviewBtn.textContent = 'Hide Review';
+        el.reviewList.innerHTML = g.history
+          .map((item, idx) => {
+            const q = item.question;
+            const userChoice = item.timedOut
+              ? 'Timed Out'
+              : item.skipped
+                ? 'Skipped'
+                : q.options[item.selectedIndex];
+            return `
+              <div class="review-item ${item.isCorrect ? '' : 'wrong'}">
+                <div class="review-item-head">
+                  <span>#${idx + 1} • ${escapeHtml(q.language)} (${escapeHtml(q.difficulty)}) • ${escapeHtml(MODE_LABELS[q.mode])}</span>
+                  <span>${item.isCorrect ? `✅ +${item.pointsEarned} pts` : '❌ 0 pts'}</span>
+                </div>
+                <div class="review-item-q">${escapeHtml(q.prompt)}</div>
+                <div class="review-item-ans">
+                  <strong>Your Answer:</strong> ${escapeHtml(userChoice)} &nbsp;|&nbsp;
+                  <strong>Correct:</strong> ${escapeHtml(q.options[q.answer])}
+                </div>
+                <div class="feedback-explain">${escapeHtml(q.explanation)}</div>
+              </div>
+            `;
+          })
+          .join('');
+
+        showScreen('results-screen');
+
+        if (accuracy >= 60) {
+          sfxVictory();
+          launchConfetti();
+        }
+      }
+
+      function launchConfetti() {
+        const canvas = el.confettiCanvas;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#38bdf8'];
+        const particles = Array.from({ length: 90 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 140,
+          w: 7 + Math.random() * 6,
+          h: 10 + Math.random() * 6,
+          vx: (Math.random() - 0.5) * 4.5,
+          vy: 2.8 + Math.random() * 4.2,
+          rot: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.16,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        }));
+
+        let frames = 0;
+        function tick() {
+          frames += 1;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+
+          if (frames < 155) {
+            requestAnimationFrame(tick);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      /* =========================================================
+         12. MODALS & EVENT LISTENERS
+         ========================================================= */
+      function openModal(modal) {
+        modal.classList.add('open');
+      }
+
+      function closeModal(modal) {
+        modal.classList.remove('open');
+      }
+
+      function initEvents() {
+        // Setup pills
+        bindPillGroup('lang-pills', 'language');
+        bindPillGroup('diff-pills', 'difficulty');
+        bindPillGroup('mode-pills', 'mode');
+        bindPillGroup('count-pills', 'count', true);
+
+        // Quick language cards on home
+        document.querySelectorAll('.lang-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const lang = card.dataset.quickLang;
+            state.config.language = lang;
+            setPillSelection('lang-pills', lang);
+            updateMatchingPill();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+
+        el.resetFiltersBtn.addEventListener('click', resetHomeFilters);
+        el.startGameBtn.addEventListener('click', () => startNewGame());
+
+        el.quickPlayBtn.addEventListener('click', () => {
+          startNewGame({ language: 'all', difficulty: 'all', mode: 'all', count: 10 });
+        });
+
+        // Navigation & Theme & Sound
+        el.navHomeBtn.addEventListener('click', () => {
+          stopTimer();
+          state.game.active = false;
+          showScreen('home-screen');
+        });
+
+        el.themeToggleBtn.addEventListener('click', () => {
+          applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+        });
+
+        el.soundToggleBtn.addEventListener('click', () => {
+          state.soundEnabled = !state.soundEnabled;
+          el.soundToggleBtn.textContent = state.soundEnabled ? '🔊' : '🔇';
+          el.soundToggleBtn.title = state.soundEnabled ? 'Mute Sound Effects' : 'Unmute Sound Effects';
+        });
+
+        // Gameplay buttons
+        el.optionsGrid.addEventListener('click', evt => {
+          const btn = evt.target.closest('.option-btn');
+          if (!btn || btn.disabled) return;
+          handleAnswer(Number(btn.dataset.index));
+        });
+
+        el.hintBtn.addEventListener('click', () => {
+          const q = state.game.questions[state.game.index];
+          if (!q || state.game.answered) return;
+          el.hintBox.textContent = `💡 Hint: ${q.hint}`;
+          el.hintBox.classList.add('visible');
+          el.hintBtn.disabled = true;
+        });
+
+        el.skipBtn.addEventListener('click', () => {
+          handleAnswer(-1, false, true);
+        });
+
+        el.quitGameBtn.addEventListener('click', () => {
+          stopTimer();
+          state.game.active = false;
+          showScreen('home-screen');
+        });
+
+        el.nextBtn.addEventListener('click', advanceQuestion);
+
+        // Results buttons
+        el.playAgainBtn.addEventListener('click', () => {
+          startNewGame(state.game.usedConfig || state.config);
+        });
+
+        el.resHomeBtn.addEventListener('click', () => showScreen('home-screen'));
+
+        el.resLbBtn.addEventListener('click', () => {
+          renderLeaderboardModal();
+          openModal(el.lbModal);
+        });
+
+        el.toggleReviewBtn.addEventListener('click', () => {
+          const hidden = el.reviewList.style.display === 'none';
+          el.reviewList.style.display = hidden ? 'flex' : 'none';
+          el.toggleReviewBtn.textContent = hidden ? 'Hide Review' : 'Show Review';
+        });
+
+        // Modals
+        el.openLbBtn.addEventListener('click', () => {
+          renderLeaderboardModal();
+          openModal(el.lbModal);
+        });
+        el.homeViewLbBtn.addEventListener('click', () => {
+          renderLeaderboardModal();
+          openModal(el.lbModal);
+        });
+        el.closeLbBtn.addEventListener('click', () => closeModal(el.lbModal));
+
+        el.openGuideBtn.addEventListener('click', () => openModal(el.guideModal));
+        el.closeGuideBtn.addEventListener('click', () => closeModal(el.guideModal));
+
+        [el.lbModal, el.guideModal].forEach(modal => {
+          modal.addEventListener('click', evt => {
+            if (evt.target === modal) closeModal(modal);
+          });
+        });
+
+        el.lbFilterLang.addEventListener('change', renderLeaderboardModal);
+        el.lbFilterDiff.addEventListener('change', renderLeaderboardModal);
+
+        // Two-step safe clear leaderboard (no native window.confirm needed)
+        el.clearLbBtn.addEventListener('click', () => {
+          if (!state.clearArmed) {
+            state.clearArmed = true;
+            el.clearLbBtn.textContent = '⚠️ Click Again to Confirm';
+            clearTimeout(state.clearConfirmTimeout);
+            state.clearConfirmTimeout = setTimeout(() => {
+              state.clearArmed = false;
+              el.clearLbBtn.textContent = '🗑️ Clear Scores';
+            }, 3500);
+            return;
+          }
+
+          clearTimeout(state.clearConfirmTimeout);
+          state.clearArmed = false;
+          el.clearLbBtn.textContent = '🗑️ Clear Scores';
+          try {
+            localStorage.removeItem(STORAGE_LB_KEY);
+          } catch (_) {}
+          renderLeaderboardModal();
+          renderHomeStatsAndMiniLb();
+        });
+
+        // Keyboard shortcuts during gameplay
+        document.addEventListener('keydown', evt => {
+          if (evt.key === 'Escape') {
+            closeModal(el.lbModal);
+            closeModal(el.guideModal);
+            return;
+          }
+          if (!state.game.active || el.lbModal.classList.contains('open') || el.guideModal.classList.contains('open')) {
+            return;
+          }
+
+          const key = evt.key.toLowerCase();
+          const mapIdx = { '1': 0, 'a': 0, '2': 1, 'b': 1, '3': 2, 'c': 2, '4': 3, 'd': 3 };
+          if (!state.game.answered && key in mapIdx) {
+            handleAnswer(mapIdx[key]);
+          } else if (!state.game.answered && key === 'h' && !el.hintBtn.disabled) {
+            el.hintBtn.click();
+          } else if (state.game.answered && evt.key === 'Enter') {
+            advanceQuestion();
+          }
+        });
+      }
+
+      /* =========================================================
+         13. INITIALIZATION
+         ========================================================= */
+      function init() {
+        try {
+          const savedTheme = localStorage.getItem(STORAGE_THEME_KEY);
+          if (savedTheme === 'light' || savedTheme === 'dark') {
+            applyTheme(savedTheme);
+          } else {
+            applyTheme('dark');
+          }
+
+          const savedName = localStorage.getItem(STORAGE_NAME_KEY);
+          if (savedName) {
+            el.playerNameInput.value = savedName;
+          }
+        } catch (_) {
+          applyTheme('dark');
+        }
+
+        updateMatchingPill();
+        renderHomeStatsAndMiniLb();
+        initEvents();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
